@@ -1,81 +1,73 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
+import Layout from "../layouts/Layout.astro";
+
+const socials = [
+  {
+    name: "Email",
+    url: "mailto:ben@bleikamp.com",
+  },
+  {
+    name: "LinkedIn",
+    url: "https://www.linkedin.com/in/bleikamp/",
+  },
+  {
+    name: "Twitter",
+    url: "https://twitter.com/bleikamp",
+  },
+  {
+    name: "Mastodon",
+    url: "https://indieweb.social/@bleikamp",
+  },
+  {
+    name: "GitHub",
+    url: "https://github.com/bleikamp",
+  },
+];
 ---
 
-<Layout title="Welcome to Astro.">
-	<main>
-		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
-		<p class="instructions">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
-		</p>
-		<ul role="list" class="link-card-grid">
-			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
-			/>
-			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
-	</main>
+<Layout title="ben bleikamp · software designer">
+  <p>
+    I'm a professional software designer, amateur programmer, and co-founder at <a
+      href="https://cased.com">Cased</a
+    >.
+  </p>
+  <p>
+    I spent a decade in San Francisco building tools for developers and
+    designers at GitHub and Meta. Now I live in Colorado, still building tools
+    for designers and developers.
+  </p>
+  <h3>CV-ish</h3>
+  <p>
+    I joined GitHub in 2011 as one of the first 20 employees and an early
+    product designer. Eventually I led the design team as Director of Product
+    Design and started the product management team as Director of Product.
+  </p>
+  <p>
+    I left GitHub in 2017 and joined Meta to lead a team building design tools
+    and infrastructure. The team is responsible for <a
+      href="https://origami.design">Origami Studio</a
+    > as well as many internal tools.
+  </p>
+  <p>
+    Before all that I worked at Yelp as an early product manager and was the
+    first designer hired at Bleacher Report. In college I made beer money
+    building WordPress sites for people like <a
+      href="https://en.wikipedia.org/wiki/Tim_Ferriss">Tim Ferriss</a
+    > and
+    <a href="https://en.wikipedia.org/wiki/Ramit_Sethi">Ramit Sethi</a>.
+  </p>
+  <p>
+    Right now I'm a co-founder at Cased and I write small angel checks to
+    founders who are building new tools.
+  </p>
+  <h3>Find me on the 'net</h3>
+  <ul class="lg:space-x-6">
+    {
+      socials.map((social) => (
+        <li class="lg:inline-block">
+          <a href={social.url}>{social.name}</a>
+        </li>
+      ))
+    }
+  </ul>
 </Layout>
-
-<style>
-	main {
-		margin: auto;
-		padding: 1.5rem;
-		max-width: 60ch;
-	}
-	h1 {
-		font-size: 3rem;
-		font-weight: 800;
-		margin: 0;
-	}
-	.text-gradient {
-		background-image: var(--accent-gradient);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 400%;
-		background-position: 0%;
-	}
-	.instructions {
-		line-height: 1.6;
-		margin: 1rem 0;
-		border: 1px solid rgba(var(--accent), 25%);
-		background-color: white;
-		padding: 1rem;
-		border-radius: 0.4rem;
-	}
-	.instructions code {
-		font-size: 0.875em;
-		font-weight: bold;
-		background: rgba(var(--accent), 12%);
-		color: rgb(var(--accent));
-		border-radius: 4px;
-		padding: 0.3em 0.45em;
-	}
-	.instructions strong {
-		color: rgb(var(--accent));
-	}
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 1rem;
-		padding: 0;
-	}
-</style>
