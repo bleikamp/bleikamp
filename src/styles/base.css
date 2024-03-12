@@ -12,12 +12,4 @@
   a {
     @apply text-indigo-600 hover:text-indigo-800;
   }
-
-  h3 {
-    @apply font-bold pt-6 uppercase tracking-widest;
-  }
-
-  ul {
-    @apply pt-6 first:pt-0 text-lg;
-  }
 }

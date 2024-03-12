@@ -15,12 +15,8 @@ const socials = [
     url: "https://read.cv/bleikamp",
   },
   {
-    name: "Twitter",
+    name: "née Twitter",
     url: "https://twitter.com/bleikamp",
-  },
-  {
-    name: "Mastodon",
-    url: "https://indieweb.social/@bleikamp",
   },
   {
     name: "GitHub",
@@ -30,43 +26,43 @@ const socials = [
 ---
 
 <Layout title="ben bleikamp · software designer">
-  <p>
-    I'm a professional software designer, amateur programmer, and co-founder at <a
-      href="https://cased.com">Cased</a
-    >.
-  </p>
-  <h3>Work</h3>
-  <p>
-    I joined GitHub in 2011 as one of the firt product designers. 
-    I ended up leading the design team as Director of Product
-    Design and then started the product management team as Director of Product.
-  </p>
-  <p>
-    I joined Meta in 2017 to lead a team building design tools
-    and infrastructure. The team is responsible for <a
-      href="https://origami.design">Origami Studio</a
-    > as well internal tools for distributing design systems and collecting feedback on design work.
-  </p>
-  <p>
-    Before all that I worked at Yelp as an early product manager and was the
-    first designer hired at Bleacher Report. In college I
-    built WordPress sites for people like <a
-      href="https://en.wikipedia.org/wiki/Tim_Ferriss">Tim Ferriss</a
-    > and
-    <a href="https://en.wikipedia.org/wiki/Ramit_Sethi">Ramit Sethi</a>.
-  </p>
-  <p>
-    Right now I'm a co-founder at Cased and I write small angel checks to
-    founders who are building new tools.
-  </p>
-  <h3>Say hi</h3>
-  <ul class="lg:space-x-6">
-    {
-      socials.map((social) => (
-        <li class="lg:inline-block">
-          <a href={social.url}>{social.name}</a>
-        </li>
-      ))
-    }
-  </ul>
+  <div class="md:flex md:my-24 my-16">
+    <h3 class="w-48 font-semibold mb-8 md:mb-0">Work</h3>
+    <div class="flex-1">
+        <p>
+            Right now I'm a co-founder at Cased. We're working with language models and AI to build tools for DevOps teams.
+        </p>
+        <p>
+            I worked at GitHub from 2011 to 2017 as one of the first product designers.
+            From 2014-2016 I led the design team as Director of Product
+            Design and in 2017 I helped start the product management team as Director of Product.
+        </p>
+        <p>
+            I joined Meta in 2017 to lead the team building design tools
+            and infrastructure. We were responsible for <a
+            href="https://origami.design">Origami Studio</a
+            > as well internal tools for distributing and maintaining design systems, collecting feedback on design work, and improving collaboration across product teams.
+        </p>
+        <p>
+            I've also worked at Yelp as an early product manager and was the
+            first designer hired at Bleacher Report. In college I
+            built WordPress sites for people like <a
+            href="https://en.wikipedia.org/wiki/Tim_Ferriss">Tim Ferriss</a
+            > and
+            <a href="https://en.wikipedia.org/wiki/Ramit_Sethi">Ramit Sethi</a>.
+        </p>
+    </div>
+  </div>
+  <div class="md:flex">
+    <h3 class="w-48 font-semibold mb-8 md:mb-0">Say hi</h3>
+    <ul class="flex-1">
+        {
+        socials.map((social) => (
+            <li>
+            <a href={social.url}>{social.name}</a>
+            </li>
+        ))
+        }
+    </ul>
+  </div>
 </Layout>

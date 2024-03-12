@@ -17,19 +17,24 @@ import "../styles/base.css";
     <title>{title ? title : "Ben Bleikamp"}</title>
   </head>
   <body class="p-12">
-    <div class="max-w-xl mx-auto">
-      <header class="mb-6">
+    <div class="max-w-3xl mx-auto">
+      <header class="mb-6 md:flex">
         <h1
-          class="font-bold text-xl mb-8 text-sm leading-5"
+          class="font-semibold text-xl mb-2 leading-5 w-48"
         >
           Ben Bleikamp
         </h1>
+        <div>
+            <h2 class="text-xl text-zinc-600">Professional software designer</h2>
+            <h2 class="text-xl text-zinc-600">Okay programmer</h2>
+            <h2 class="text-xl text-zinc-600">Co-founder of <a href="https://cased.com">Cased</a></h2>
+        </div>
       </header>
-      <div class="">
+
         <main>
           <slot />
         </main>
-      </div>
+
     </div>
   </body>
 </html>
