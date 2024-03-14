@@ -9,6 +9,10 @@
     @apply text-lg mt-6 first:mt-0;
   }
 
+  h4 {
+    @apply text-sm mt-6 first:mt-0 font-semibold text-zinc-600;
+  }
+
   a {
     @apply text-indigo-600 hover:text-indigo-800;
   }
