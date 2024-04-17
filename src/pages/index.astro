@@ -15,7 +15,7 @@ const socials = [
     url: "https://read.cv/bleikamp",
   },
   {
-    name: "née Twitter",
+    name: "X (née Twitter)",
     url: "https://twitter.com/bleikamp",
   },
   {
@@ -26,22 +26,28 @@ const socials = [
 ---
 
 <Layout title="ben bleikamp · software designer">
-  <div class="md:flex md:my-24 my-16">
-    <h3 class="w-48 font-semibold mb-8 md:mb-0">Work</h3>
-    <div class="flex-1">
-      <h4>Now</h4>
+  <div
+    class="md:grid grid-cols-4 gap-24 md:my-24 my-16 text-zinc-200 font-medium"
+  >
+    <h2 class="col-span-4">Work</h2>
+    <h4 class="col-span-1">Now</h4>
+    <div class="col-span-3">
       <p>
-        Right now I'm a co-founder at Cased. We're working with language models
-        and AI to build tools for DevOps teams.
+        I'm a co-founder at Cased. We're working with language models and AI to
+        build tools for DevOps teams.
       </p>
-      <h4>Meta, 2017-2018</h4>
-      <p>
-        I lead the team building design tools and infrastructure. We were
-        responsible for <a href="https://origami.design">Origami Studio</a> as well
-        internal tools for distributing and maintaining design systems, collecting
-        feedback on design work, and improving collaboration across product teams.
-      </p>
-      <h4>GitHub, 2011-2017</h4>
+    </div>
+    <h4 class="col-span-1">Meta<br /> 2017-2018</h4>
+    <p class="col-span-3">
+      I led the team building internal design tools and infrastructure. We were
+      responsible for <a href="https://origami.design">Origami Studio</a> as well
+      tools for distributing and maintaining design systems, collaborating on design
+      work, and improving quality across design and engineering.
+    </p>
+    <h4 class="col-span-1">
+      GitHub <br />2011-2017
+    </h4>
+    <div class="col-span-3">
       <p>
         I joined as one of the first product designers. From 2014-2016 I led the
         design team as Director of Product Design and in 2017 I helped start the
@@ -51,23 +57,23 @@ const socials = [
         During my time at GitHub I led design and product for areas like mobile,
         organizations, security, and enterprise.
       </p>
-      <h4>Yelp, Bleacher Report, etc. 2007-2011</h4>
-      <p>
-        I've also worked at Yelp as an early product manager and was the first
-        designer hired at Bleacher Report. In college I built WordPress sites
-        for people like <a href="https://en.wikipedia.org/wiki/Tim_Ferriss"
-          >Tim Ferriss</a
-        > and
-        <a href="https://en.wikipedia.org/wiki/Ramit_Sethi">Ramit Sethi</a>.
-      </p>
     </div>
-  </div>
-  <div class="md:flex">
-    <h3 class="w-48 font-semibold mb-8 md:mb-0">Say hi</h3>
-    <ul class="flex-1">
+    <h4 class="col-span-1">
+      Various<br /> 2007-2011
+    </h4>
+    <p class="col-span-3">
+      I worked at Yelp as an early product manager and was the first designer
+      hired at Bleacher Report. As a freelancer I built WordPress sites for
+      people like <a href="https://en.wikipedia.org/wiki/Tim_Ferriss"
+        >Tim Ferriss</a
+      >
+      and
+      <a href="https://en.wikipedia.org/wiki/Ramit_Sethi">Ramit Sethi</a>.
+    </p>
+    <ul class="col-span-4 mt-6 pt-6 border-t border-gray-700">
       {
         socials.map((social) => (
-          <li>
+          <li class="md:inline-block md:mr-4 text-sm">
             <a href={social.url}>{social.name}</a>
           </li>
         ))

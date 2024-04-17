@@ -6,14 +6,14 @@
 
 @layer base {
   p {
-    @apply text-lg mt-6 first:mt-0;
+    @apply text-lg;
   }
 
   h4 {
-    @apply text-sm mt-6 first:mt-0 font-semibold text-zinc-600;
+    @apply text-base font-semibold text-zinc-200;
   }
 
   a {
-    @apply text-indigo-600 hover:text-indigo-800;
+    @apply text-lime-500 underline hover:text-lime-300;
   }
 }
