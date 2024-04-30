@@ -27,27 +27,30 @@ const socials = [
 
 <Layout title="ben bleikamp · software designer">
   <div
-    class="md:grid grid-cols-4 gap-24 md:my-24 my-16 text-zinc-200 font-medium"
+    class="md:grid grid-cols-4 gap-24 md:my-16 my-16 dark:text-neutral-200 text-neutral-900"
   >
-    <h2 class="col-span-4">Work</h2>
-    <h4 class="col-span-1">Now</h4>
-    <div class="col-span-3">
+    <h2 class="col-span-4 font-extrabold mb-12 md:mb-0">Work</h2>
+    <h4 class="col-span-1 my-4 md:my-0">Now</h4>
+    <div class="col-span-3 mb-12 md:mb-0">
       <p>
         I'm a co-founder at Cased. We're working with language models and AI to
         build tools for DevOps teams.
       </p>
     </div>
-    <h4 class="col-span-1">Meta<br /> 2017-2018</h4>
-    <p class="col-span-3">
-      I led the team building internal design tools and infrastructure. We were
-      responsible for <a href="https://origami.design">Origami Studio</a> as well
-      tools for distributing and maintaining design systems, collaborating on design
-      work, and improving quality across design and engineering.
-    </p>
-    <h4 class="col-span-1">
-      GitHub <br />2011-2017
+    <h4 class="col-span-1 my-4 md:my-0">
+      Meta<br />
+      <span class="font-normal">2017-2018</span>
     </h4>
-    <div class="col-span-3">
+    <p class="col-span-3 mb-12 md:mb-0">
+      I led the team building internal design tools and infrastructure. We were
+      responsible for <a href="https://origami.design">Origami Studio</a>
+      as well tools for distributing and maintaining design systems, collaborating
+      on design work, and improving quality across design and engineering.
+    </p>
+    <h4 class="col-span-1 my-4 md:my-0">
+      GitHub <br /><span class="font-normal">2011-2017</span>
+    </h4>
+    <div class="col-span-3 mb-12 md:md-0">
       <p>
         I joined as one of the first product designers. From 2014-2016 I led the
         design team as Director of Product Design and in 2017 I helped start the
@@ -58,7 +61,7 @@ const socials = [
         organizations, security, and enterprise.
       </p>
     </div>
-    <h4 class="col-span-1">
+    <h4 class="col-span-1 my-4 md:my-0">
       Various<br /> 2007-2011
     </h4>
     <p class="col-span-3">
@@ -70,7 +73,9 @@ const socials = [
       and
       <a href="https://en.wikipedia.org/wiki/Ramit_Sethi">Ramit Sethi</a>.
     </p>
-    <ul class="col-span-4 mt-6 pt-6 border-t border-gray-700">
+    <ul
+      class="col-span-4 mt-6 pt-6 border-t dark:border-neutral-600 border-neutral-300"
+    >
       {
         socials.map((social) => (
           <li class="md:inline-block md:mr-4 text-sm">
