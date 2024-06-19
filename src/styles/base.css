@@ -6,7 +6,7 @@
 
 @layer base {
   p {
-    @apply text-lg;
+    @apply text-base;
   }
 
   h4 {
