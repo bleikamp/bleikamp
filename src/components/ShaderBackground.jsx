@@ -67,7 +67,11 @@ void main() {
     float n = snoise(pos - u_time * 0.05);
 
     // Create a base color
-    vec3 color = vec3(mouse.x * 0.0, mouse.y *0.5, clamp(mouse.x*mouse.y*0.75, 0.1, 0.5));
+    vec3 color = mix(
+      vec3(0.9, mouse.y * 0.5, clamp(mouse.x*0.75, 1., 0.0)),
+      vec3(0.5, mouse.y * 1., clamp(mouse.x*0.1, 0.1, 0.5)),
+      smoothstep(0.0, 1.0, mouse.x * mouse.y)
+    );
 
     // Blend with white for a watercolor effect
     color = mix(color, vec3(0.2), n * 0.5 + 1.);

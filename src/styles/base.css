@@ -5,6 +5,10 @@
 @tailwind utilities;
 
 @layer base {
+  body {
+    cursor: url("/blei.svg"), auto;
+  }
+
   p {
     @apply text-base;
   }
