@@ -5,11 +5,24 @@ import Shader from "../components/Shader.astro";
 
 <Layout>
   <div
-    class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-sm w-[30vw] mx-auto"
+    class="min-h-screen flex flex-col justify-center font-mono text-sm w-full max-w-[800px] p-12 mx-auto"
   >
     <h1 class="font-medium tracking-widest uppercase">~/ Ben Bleikamp</h1>
-    <p class="uppercase tracking-widest">?/ Software design & strategy</p>
-    <p class="uppercase tracking-widest mb-12">@/ hello_world@bleikamp.com</p>
+    <p class="uppercase tracking-widest mb-12">
+      ?/ Software designer & builder
+    </p>
     <Shader />
+    <p class="mt-12 uppercase">Now /</p>
+    <p class="mt-2">
+      Co-founder at <a href="https://cased.com">Cased</a><br />
+      Based in Mill Valley, California <br />
+      With my wife & dog<br />
+      Current obsessions: gravel cycling & skiing
+    </p>
+    <p class="mt-12 uppercase">Previously /</p>
+    <p class="mt-2">
+      Head of Design at GitHub, Design manager at Meta, early designer at Yelp
+      and Bleacher Report
+    </p>
   </div>
 </Layout>
