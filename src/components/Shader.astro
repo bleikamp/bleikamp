@@ -1,0 +1,268 @@
+<style>
+  .shader-canvas {
+    @apply w-[30vw] h-[30vw];
+    background-color: #000;
+  }
+</style>
+
+<canvas id="webgl-canvas" class="shader-canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById("webgl-canvas");
+  const gl = canvas.getContext("webgl");
+
+  // Resize the canvas
+  function resizeCanvas() {
+    canvas.width = window.innerWidth * 0.3;
+    canvas.height = window.innerWidth * 0.3;
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+  }
+
+  window.addEventListener("resize", () => {
+    resizeCanvas();
+  });
+
+  resizeCanvas(); // initial sizing
+
+  function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error("Shader compile failed:", gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  function createProgram(gl, vertexSource, fragmentSource) {
+    const vShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
+    const fShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
+
+    const program = gl.createProgram();
+    gl.attachShader(program, vShader);
+    gl.attachShader(program, fShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error("Program link failed:", gl.getProgramInfoLog(program));
+      gl.deleteProgram(program);
+      return null;
+    }
+
+    return program;
+  }
+
+  const vertexSource = `
+    attribute vec2 a_position;
+    void main() {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+    }
+`;
+
+  const fragmentSource = `
+    precision mediump float;
+
+    uniform vec2 u_resolution;
+    uniform float u_time;
+
+    float random(vec2 st) {
+        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+    }
+
+    float noise(vec2 st) {
+        vec2 i = floor(st);
+        vec2 f = fract(st);
+        float a = random(i);
+        float b = random(i + vec2(1.0, 0.0));
+        float c = random(i + vec2(0.0, 1.0));
+        float d = random(i + vec2(1.0, 1.0));
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+    }
+
+    float detailNoise(vec2 st) {
+        float n1 = noise(st * 200.0) * 0.5;
+        float n2 = noise(st * 400.0) * 0.25;
+        return (n1 + n2) * 0.03;
+    }
+
+    vec2 glassBars(vec2 st) {
+        // Calculate pixel-based spacing
+        float pixelWidth = (u_resolution.x / 8.0); // 16 bars
+        float gapPixels = 1.5; // 1.5px gap
+        float barSpacing = (pixelWidth + gapPixels) / u_resolution.x;
+
+        float scaledX = st.x / barSpacing;
+        float barIndex = floor(scaledX);
+        float bars = fract(scaledX);
+
+        float gapRatio = gapPixels / (pixelWidth + gapPixels);
+        float bar = smoothstep(gapRatio, gapRatio + 0.01, bars) *
+                    smoothstep(1.0, 1.0 - gapRatio, bars);
+
+        float barLocalX = fract(scaledX);
+        float barGradient = smoothstep(0.0, 1.0, barLocalX); // Removed gapRatio from gradient
+
+        bar *= barGradient;
+        bar *= 0.15;
+
+        float distFromCenter = length(st);
+        float distortionAmount = smoothstep(0.0, 0.75, distFromCenter) * 0.7;
+
+        return vec2(bar, distortionAmount);
+    }
+
+    float sampleCircle(vec2 st, float dist, float blur) {
+        return smoothstep(0.5 + blur, 0.48 - blur, dist);
+    }
+
+    float blurredCircle(vec2 st, float distortionAmount, float barPattern) {
+        float dist = length(st);
+
+        if (barPattern < 0.01) {
+            return smoothstep(0.5, 0.48, dist);
+        }
+
+        float yDistance = abs(st.y);
+        float distanceInfluence = smoothstep(0.5, 0.0, yDistance);
+        float baseBlur = 0.01 + (distortionAmount * 0.15 * (1.0 - distanceInfluence) * 2.0);
+
+        float sum = 0.0;
+        const int SAMPLES = 24;
+
+        for(int i = 0; i < SAMPLES; i++) {
+            float angle = float(i) * 3.14159 * 2.0 / float(SAMPLES);
+            vec2 offset = vec2(cos(angle), sin(angle)) * baseBlur;
+            float sampleDist = length(st + offset);
+            sum += sampleCircle(st + offset, sampleDist, baseBlur);
+        }
+
+        return sum / float(SAMPLES);
+    }
+
+    void main() {
+        vec2 st = (gl_FragCoord.xy / u_resolution.xy) * 2.0 - 1.0;
+        st.x *= u_resolution.x / u_resolution.y;
+        vec2 originalSt = st;
+
+        float squareSize = 1.0;
+        bool inSquareBounds = abs(originalSt.x) < squareSize &&
+                             abs(originalSt.y) < squareSize;
+
+        vec2 glassEffect = glassBars(originalSt);
+        float barPattern = glassEffect.x;
+        float distortionAmount = glassEffect.y;
+
+        vec2 undistortedSt = st;
+
+        if (inSquareBounds) {
+            float baseMag = 0.05;
+            float distMag = distortionAmount * 0.15;
+            float totalMag = baseMag + distMag;
+
+            st += sin(originalSt * 20.0 + u_time * 1.5) * totalMag * barPattern;
+        }
+
+        float dist = length(st);
+        float sharpCircle = smoothstep(0.99, 0.1, length(undistortedSt / 1.25));
+        float blurredEdge = blurredCircle(st, distortionAmount, barPattern);
+        float circle = mix(sharpCircle, blurredEdge, barPattern);
+
+        vec2 noisePos = st * 3.0 + u_time * 0.2;
+        float organicFlow = noise(noisePos);
+
+        vec3 color1 = vec3(1.0, 0.9, 0.9);
+        vec3 color2 = vec3(1.0, 0.2, 0.5);
+        vec3 softGlow = mix(color1, color2, organicFlow);
+        float highlight = smoothstep(0.1, 0.9, organicFlow);
+        softGlow += highlight * 0.125;
+
+        vec3 finalColor = softGlow * circle;
+
+        if (inSquareBounds) {
+                float glassHighlight = barPattern * (0.15 + distortionAmount * 0.05);
+
+                vec3 smokedGlass = vec3(0.05, 0.05, 0.06);
+                float surfaceNoise = detailNoise(originalSt + vec2(u_time * 0.1, 0.0));
+                vec3 glassColor = smokedGlass * (1.0 + surfaceNoise);
+
+                float opacity = smoothstep(0.0, 0.5, barPattern);
+
+                glassColor.r *= 1.0 + distortionAmount * 0.03;
+                glassColor.b *= 1.0 + distortionAmount * 0.04;
+
+                vec3 glassEffect = glassColor * opacity;
+
+                // Apply glass effect to entire square
+                vec3 withGlass = mix(
+                    vec3(0.1, 0.15, 0.19), // Background color
+                    vec3(0.035, 0.035, 0.039) + glassEffect, // Background + glass
+                    barPattern
+                );
+
+                // Mix with circle
+                finalColor = mix(
+                    withGlass,
+                    finalColor + glassEffect,
+                    circle
+                );
+            }
+
+            vec2 squareEdge = abs(originalSt) - vec2(squareSize);
+            float edgeDist = max(squareEdge.x, squareEdge.y);
+            float squareMask = 1.0 - smoothstep(-0.01, 0.01, edgeDist);
+
+            finalColor *= squareMask;
+            float alpha = max(circle, barPattern * 0.5) * squareMask; // Modified alpha to include bars
+
+            finalColor = clamp(finalColor, 0.0, 1.0);
+
+            gl_FragColor = vec4(finalColor, alpha);
+    }
+`;
+
+  const program = createProgram(gl, vertexSource, fragmentSource);
+
+  // Look up attributes/uniforms
+  const aPositionLocation = gl.getAttribLocation(program, "a_position");
+  const uResolutionLocation = gl.getUniformLocation(program, "u_resolution");
+  const uTimeLocation = gl.getUniformLocation(program, "u_time");
+
+  // Create buffer with full-screen quad
+  const positionBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  const positions = new Float32Array([
+    -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
+  ]);
+  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+  // Prepare to draw
+  gl.useProgram(program);
+  gl.enableVertexAttribArray(aPositionLocation);
+  gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
+
+  // Rendering / Animation loop
+  let startTime = performance.now();
+  function render() {
+    const now = performance.now();
+    const time = (now - startTime) * 0.001;
+
+    gl.uniform2f(
+      uResolutionLocation,
+      gl.drawingBufferWidth,
+      gl.drawingBufferHeight,
+    );
+    gl.uniform1f(uTimeLocation, time);
+
+    gl.clearColor(0.4, 0.4, 0.4, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    requestAnimationFrame(render);
+  }
+
+  render();
+</script>
