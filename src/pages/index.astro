@@ -7,22 +7,25 @@ import Shader from "../components/Shader.astro";
   <div
     class="min-h-screen flex flex-col justify-center font-mono text-sm w-full max-w-[800px] p-12 mx-auto"
   >
-    <h1 class="font-medium tracking-widest uppercase">~/ Ben Bleikamp</h1>
-    <p class="uppercase tracking-widest mb-12">
-      ?/ Software designer & builder
+    <h1 class="font-semibold tracking-widest uppercase">Ben Bleikamp</h1>
+    <p class="font-light uppercase tracking-widest mb-12">
+      Software designer & builder
     </p>
     <Shader />
-    <p class="mt-12 uppercase">Now /</p>
-    <p class="mt-2">
-      Co-founder at <a href="https://cased.com">Cased</a><br />
-      Based in Mill Valley, California <br />
-      With my wife & dog<br />
-      Current obsessions: gravel cycling & skiing
-    </p>
-    <p class="mt-12 uppercase">Previously /</p>
-    <p class="mt-2">
-      Head of Design at GitHub, Design manager at Meta, early designer at Yelp
-      and Bleacher Report
-    </p>
+    <div class="mt-12">
+      <div class="col-span-3 uppercase tracking-widest font-semibold">Now</div>
+      <div class="col-span-9 leading-relaxed mb-12">
+        I'm a co-founder at <a href="http://cased.com">Cased</a>. Based in Mill
+        Valley, California with my wife and our dog. My current obsession are
+        gravel bikes and skiing.
+      </div>
+      <div class="col-span-3 uppercase tracking-widest font-semibold">Past</div>
+      <div class="col-span-9 leading-relaxed mb-12">
+        <div>Meta, 2017-2018</div>
+        <div>GitHub, 2011-2017</div>
+        <div>Yelp, 2009-2011</div>
+        <div>Bleacher Report, 2008-2009</div>
+      </div>
+    </div>
   </div>
 </Layout>

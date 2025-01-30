@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+a {
+  @apply text-fuchsia-600 underline;
+
+  &:hover {
+    @apply text-indigo-500;
+  }
+}

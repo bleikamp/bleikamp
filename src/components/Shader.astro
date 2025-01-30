@@ -11,6 +11,12 @@
   const canvas = document.getElementById("webgl-canvas");
   const gl = canvas.getContext("webgl");
 
+  let mouseXVel = 0;
+  let mouseYVel = 0;
+  let lastMouseX = 0.5;
+  let lastMouseY = 0.5;
+  let velocityDecay = 0.01; // How quickly velocity falls off
+
   // Resize the canvas
   function resizeCanvas() {
     canvas.width = window.innerWidth * 0.3;
@@ -63,9 +69,10 @@
 
   const fragmentSource = `
     precision mediump float;
-
+    uniform vec2 u_mouse;
     uniform vec2 u_resolution;
     uniform float u_time;
+    uniform vec2 u_mouseVelocity;
 
     float random(vec2 st) {
         return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
@@ -93,9 +100,8 @@
     }
 
     vec2 glassBars(vec2 st) {
-        // Calculate pixel-based spacing
-        float pixelWidth = (u_resolution.x / 8.0); // 16 bars
-        float gapPixels = 1.5; // 1.5px gap
+        float pixelWidth = (u_resolution.x / 8.0);
+        float gapPixels = 1.5;
         float barSpacing = (pixelWidth + gapPixels) / u_resolution.x;
 
         float scaledX = st.x / barSpacing;
@@ -107,7 +113,7 @@
                     smoothstep(1.0, 1.0 - gapRatio, bars);
 
         float barLocalX = fract(scaledX);
-        float barGradient = smoothstep(0.0, 1.0, barLocalX); // Removed gapRatio from gradient
+        float barGradient = smoothstep(0.0, 1.0, barLocalX);
 
         bar *= barGradient;
         bar *= 0.15;
@@ -125,7 +131,7 @@
     float blurredCircle(vec2 st, float distortionAmount, float barPattern) {
         float dist = length(st);
 
-        if (barPattern < 0.01) {
+        if (barPattern < 0.05) {
             return smoothstep(0.5, 0.48, dist);
         }
 
@@ -146,10 +152,37 @@
         return sum / float(SAMPLES);
     }
 
+    float getMouseInfluence(vec2 st, vec2 mouse) {
+        vec2 velocity = u_mouseVelocity;
+        float speed = length(velocity);
+
+        // Make radius larger when moving faster
+        float baseRadius = 0.1; // Base radius when not moving
+        float maxRadiusIncrease = 1.0; // Maximum additional radius
+        float radius = baseRadius + (speed * maxRadiusIncrease);
+
+        vec2 dir = normalize(velocity + vec2(0.0001));
+        vec2 distortedPos = mouse + velocity * 0.5;
+        float dist = length(st - distortedPos) * 2.5;
+
+        // Adjust softness with speed too (optional)
+        float baseSoftness = 0.5;
+        float softness = baseSoftness * (1.0 + speed * 0.5);
+
+        // Distort the distance based on velocity direction
+        dist += dot(st - mouse, dir) * speed * .1;
+
+        return exp(-dist * dist / softness);
+    }
+
     void main() {
         vec2 st = (gl_FragCoord.xy / u_resolution.xy) * 2.0 - 1.0;
         st.x *= u_resolution.x / u_resolution.y;
         vec2 originalSt = st;
+
+        vec2 mousePos = u_mouse * 2.0 - 1.0;
+        mousePos.x *= u_resolution.x/u_resolution.y;
+        float mouseInfluence = getMouseInfluence(originalSt, mousePos);
 
         float squareSize = 1.0;
         bool inSquareBounds = abs(originalSt.x) < squareSize &&
@@ -171,16 +204,24 @@
 
         float dist = length(st);
         float sharpCircle = smoothstep(0.99, 0.1, length(undistortedSt / 1.25));
-        float blurredEdge = blurredCircle(st, distortionAmount, barPattern);
-        float circle = mix(sharpCircle, blurredEdge, barPattern);
+        float blurredEdge = blurredCircle(st, distortionAmount * (1.0 - mouseInfluence), barPattern);
+        float circle = mix(sharpCircle, blurredEdge, barPattern * (1.0 - mouseInfluence * 0.8)); // Add this line
 
-        vec2 noisePos = st * 3.0 + u_time * 0.2;
+        vec2 noisePos = st * 4.0 + u_time * 0.3334;
         float organicFlow = noise(noisePos);
 
-
-
+        // Modify colors based on mouse distance
         vec3 color1 = vec3(st.x * 0.5 + 0.5, st.y * 0.5 + 0.5, 1.0);
         vec3 color2 = vec3(1.0, st.y*0.5, 0.5);
+
+        // Add mouse-influenced colors
+        vec3 mouseColor1 = vec3(0.1, 0.8, 1.0); // purple
+        vec3 mouseColor2 = vec3(0.1, 0.26, 1.0); // cyan
+
+        // Mix colors based on mouse influence
+        color1 = mix(color1, mouseColor1, mouseInfluence);
+        color2 = mix(color2, mouseColor2, mouseInfluence);
+
         vec3 softGlow = mix(color1, color2, organicFlow);
         float highlight = smoothstep(0.1, 0.9, organicFlow);
         softGlow += highlight * 0.125;
@@ -188,44 +229,46 @@
         vec3 finalColor = softGlow * circle;
 
         if (inSquareBounds) {
-                float glassHighlight = barPattern * (0.15 + distortionAmount * 0.05);
+            float glassHighlight = barPattern * (0.15 + distortionAmount * 0.05);
+            vec3 smokedGlass = vec3(0.05, 0.05, 0.06);
+            float surfaceNoise = detailNoise(originalSt + vec2(u_time * 0.1, 0.0));
+            vec3 glassColor = smokedGlass * (1.0 + surfaceNoise);
 
-                vec3 smokedGlass = vec3(0.05, 0.05, 0.06);
-                float surfaceNoise = detailNoise(originalSt + vec2(u_time * 0.1, 0.0));
-                vec3 glassColor = smokedGlass * (1.0 + surfaceNoise);
+            float opacity = smoothstep(0.0, 0.5, barPattern);
+            opacity *= (1.0 - mouseInfluence * 0.9); // Increased influence
 
-                float opacity = smoothstep(0.0, 0.5, barPattern);
+            glassColor.r *= 1.0 + distortionAmount * 0.03;
+            glassColor.b *= 1.0 + distortionAmount * 0.04;
 
-                glassColor.r *= 1.0 + distortionAmount * 0.03;
-                glassColor.b *= 1.0 + distortionAmount * 0.04;
+            vec3 glassEffect = glassColor * opacity;
 
-                vec3 glassEffect = glassColor * opacity;
+            vec3 withGlass = mix(
+                vec3(0.1, 0.15, 0.19),
+                vec3(0.035, 0.035, 0.039) + glassEffect,
+                barPattern * (1.0 - mouseInfluence * 0.9) // Match the opacity multiplier
+            );
 
-                // Apply glass effect to entire square
-                vec3 withGlass = mix(
-                    vec3(0.1, 0.15, 0.19), // Background color
-                    vec3(0.035, 0.035, 0.039) + glassEffect, // Background + glass
-                    barPattern
-                );
+            finalColor = mix(
+                withGlass,
+                finalColor + glassEffect,
+                circle
+            );
+        }
 
-                // Mix with circle
-                finalColor = mix(
-                    withGlass,
-                    finalColor + glassEffect,
-                    circle
-                );
-            }
+        vec2 squareEdge = abs(originalSt) - vec2(squareSize);
+        float edgeDist = max(squareEdge.x, squareEdge.y);
+        float squareMask = 1.0 - smoothstep(-0.01, 0.01, edgeDist);
 
-            vec2 squareEdge = abs(originalSt) - vec2(squareSize);
-            float edgeDist = max(squareEdge.x, squareEdge.y);
-            float squareMask = 1.0 - smoothstep(-0.01, 0.01, edgeDist);
+        finalColor *= squareMask;
+        float alpha = max(circle, barPattern * 0.5) * squareMask;
 
-            finalColor *= squareMask;
-            float alpha = max(circle, barPattern * 0.5) * squareMask; // Modified alpha to include bars
+        finalColor = clamp(finalColor, 0.0, 1.0);
 
-            finalColor = clamp(finalColor, 0.0, 1.0);
+        // Debug visualization
+        // vec3 debugMouse = vec3(step(length(originalSt - mousePos), 0.05));
+        // finalColor = mix(finalColor, debugMouse, 0.5);
 
-            gl_FragColor = vec4(finalColor, alpha);
+        gl_FragColor = vec4(finalColor, alpha);
     }
 `;
 
@@ -235,6 +278,35 @@
   const aPositionLocation = gl.getAttribLocation(program, "a_position");
   const uResolutionLocation = gl.getUniformLocation(program, "u_resolution");
   const uTimeLocation = gl.getUniformLocation(program, "u_time");
+  const uMouseLocation = gl.getUniformLocation(program, "u_mouse");
+  const uMouseVelocityLocation = gl.getUniformLocation(
+    program,
+    "u_mouseVelocity",
+  );
+
+  let mouseX = 0.5;
+  let mouseY = 0.5;
+
+  canvas.addEventListener("mousemove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const newMouseX = (e.clientX - rect.left) / rect.width;
+    const newMouseY = 1.0 - (e.clientY - rect.top) / rect.height;
+
+    // Calculate velocity
+    mouseXVel = (newMouseX - lastMouseX) * 2.0; // Multiply to amplify effect
+    mouseYVel = (newMouseY - lastMouseY) * 2.0;
+
+    // Update positions
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+    mouseX = Math.max(0, Math.min(1, newMouseX));
+    mouseY = Math.max(0, Math.min(1, newMouseY));
+  });
+
+  canvas.addEventListener("mouseleave", () => {
+    mouseX = 0.5;
+    mouseY = 0.5;
+  });
 
   // Create buffer with full-screen quad
   const positionBuffer = gl.createBuffer();
@@ -255,12 +327,17 @@
     const now = performance.now();
     const time = (now - startTime) * 0.001;
 
+    mouseXVel *= velocityDecay;
+    mouseYVel *= velocityDecay;
+
+    gl.uniform2f(uMouseLocation, mouseX, mouseY);
     gl.uniform2f(
       uResolutionLocation,
       gl.drawingBufferWidth,
       gl.drawingBufferHeight,
     );
     gl.uniform1f(uTimeLocation, time);
+    gl.uniform2f(uMouseVelocityLocation, mouseXVel, mouseYVel);
 
     gl.clearColor(0.4, 0.4, 0.4, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
