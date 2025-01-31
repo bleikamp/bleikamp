@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Shader from "../components/Shader.astro";
+import Shader2 from "../components/Shader2.astro";
 ---
 
 <Layout>
@@ -13,19 +14,36 @@ import Shader from "../components/Shader.astro";
     </p>
     <Shader />
     <div class="mt-12">
-      <div class="col-span-3 uppercase tracking-widest font-semibold">Now</div>
+      <div class="uppercase tracking-widest font-semibold mb-6">Now</div>
       <div class="col-span-9 leading-relaxed mb-12">
         I'm a co-founder at <a href="http://cased.com">Cased</a>. Based in Mill
         Valley, California with my wife and our dog. My current obsession are
         gravel bikes and skiing.
       </div>
-      <div class="col-span-3 uppercase tracking-widest font-semibold">Past</div>
-      <div class="col-span-9 leading-relaxed mb-12">
-        <div>Meta, 2017-2018</div>
-        <div>GitHub, 2011-2017</div>
-        <div>Yelp, 2009-2011</div>
-        <div>Bleacher Report, 2008-2009</div>
+      <div class="uppercase tracking-widest font-semibold mb-6">Work</div>
+      <div class="flex flex-col gap-6 leading-relaxed mb-12">
+        <p>
+          I am a software designer and have been building software 15 years. I'm
+          a generalist and prefer building prototypes over drawing boxes. My
+          interest (and accidental expertise) is in building tools for people
+          who build things.
+        </p>
+        <p class="col-span-9 leading-relaxed">
+          Right now I work at Cased, a company I co-founded. We're' building
+          tools to help developers with infrastructure. We're backed by Founders
+          Fund, Sancus, GTM Fund, and a bunch of other great investors.
+        </p>
+        <p>I've been lucky enough to work on things a lot of people use:</p>
+        <div>
+          <div>Meta, 2017-2018</div>
+          <div>GitHub, 2011-2017</div>
+          <div>Yelp, 2009-2011</div>
+          <div>Bleacher Report, 2008-2009</div>
+        </div>
       </div>
+      <div class="uppercase tracking-widest font-semibold mb-6">Say hi</div>
+      <div class="col-span-9 leading-relaxed mb-12">ben@bleikamp.com</div>
     </div>
+    <Shader2 />
   </div>
 </Layout>
