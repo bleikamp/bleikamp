@@ -15,50 +15,90 @@ import Shader from "../components/Shader.astro";
     <div class="mt-12">
       <div class="uppercase tracking-widest font-semibold mb-6">Now</div>
       <div class="col-span-9 leading-relaxed mb-12">
-        Co-founder at <a href="http://cased.com">Cased</a> in Mill Valley, California.
-        Currently into gravel bikes, skiing, and woodworking.
+        Currently building <a href="http://cased.com">Cased</a> in Mill Valley, California.
+        When I'm not working, I'm riding gravel bikes, skiing, or trying to get in
+        to woodworking.
       </div>
       <div class="uppercase tracking-widest font-semibold mb-6">Recently</div>
       <div class="flex flex-col gap-6 leading-relaxed mb-12">
-        Spent a few years in Colorado skiing, hiking, and golfing. Before that a
+        Spent a few years in Colorado for a few years. Before that, spent a
         decade in San Francisco working at start ups.
       </div>
       <div class="uppercase tracking-widest font-semibold mb-6">Work</div>
       <div class="flex flex-col gap-6 leading-relaxed mb-12">
         <p class="col-span-9 leading-relaxed">
-          At Cased, we're building tools that help developers work with
+          At Cased, we build tools that help developers work with
           infrastructure. We're backed by Founders Fund, Sancus, GTM Fund, and
-          other great investors.
+          other investors who understand what we're trying to solve.
         </p>
         <p>
-          I've been designing and building software for 15 years. I've worked at
-          small companies and large companies. And I've helped small companies
+          I've spent 15 years designing and building software at small start ups
+          and big companies. And I've had the opportunity to see small start ups
           become big companies.
         </p>
-        <p>Previously, I worked at:</p>
-        <div>
+        <p>Previously:</p>
+        <div class="space-y-4">
           <div>
-            Meta <span class="ml-2 text-slate-500">Design Manager</span
-            >..................2017-2018
+            <div class="flex items-center">
+              <span class="whitespace-nowrap">Meta</span>
+              <span
+                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+              ></span>
+              <span class="whitespace-nowrap">2017-2018</span>
+            </div>
+            <div class="text-slate-500">Design Manager</div>
           </div>
+
           <div>
-            GitHub <span class="ml-2 text-slate-500">Head of Design, &c.</span>,
-            .........2011-2017
+            <div class="flex items-center">
+              <span class="whitespace-nowrap">GitHub</span>
+              <span
+                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+              ></span>
+              <span class="whitespace-nowrap">2011-2017</span>
+            </div>
+            <div class="text-slate-500">Head of Design, &c.</div>
           </div>
+
           <div>
-            Yelp <span class="ml-2 text-slate-500">Product Manager</span
-            >................ 2009-2011
+            <div class="flex items-center">
+              <span class="whitespace-nowrap">Yelp</span>
+              <span
+                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+              ></span>
+              <span class="whitespace-nowrap">2009-2011</span>
+            </div>
+            <div class="text-slate-500">Product Manager</div>
           </div>
+
           <div>
-            Bleacher Report <span class="ml-2 text-slate-500">Designer</span>
-            ............2008-2009
+            <div class="flex items-center">
+              <span class="whitespace-nowrap">Bleacher Report</span>
+              <span
+                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+              ></span>
+              <span class="whitespace-nowrap">2008-2009</span>
+            </div>
+            <div class="text-slate-500">Designer</div>
           </div>
         </div>
       </div>
       <div class="uppercase tracking-widest font-semibold mb-6">Say hi</div>
       <div class="col-span-9 leading-relaxed mb-12">
-        Drop me a line: ben@bleikamp.com
+        Email me at ben@bleikamp.com
       </div>
     </div>
   </div>
 </Layout>
+
+<style>
+  .dots-separator {
+    position: relative;
+  }
+
+  .dots-separator::after {
+    content: "...................................................................................................................................................................................................................................";
+    overflow: hidden;
+    display: block;
+  }
+</style>
