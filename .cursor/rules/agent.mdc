@@ -1,0 +1,12 @@
+---
+description: Rules for the agent to follows
+globs: 
+---
+
+# Always follow the following rules
+
+1. Update the project structure in the structure.mdc file when you create a new file or directory
+    
+    When you create a new file(s), run the following command afterwards to update the project documentation.
+
+    ```bash update_structure.sh```
