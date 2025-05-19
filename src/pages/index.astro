@@ -4,89 +4,98 @@ import Shader from "../components/Shader.astro";
 ---
 
 <Layout>
-  <div
-    class="min-h-screen flex flex-col justify-center font-mono text-sm w-full max-w-[800px] p-12 mx-auto"
-  >
-    <h1 class="font-semibold tracking-widest uppercase">Ben Bleikamp</h1>
-    <p class="font-light uppercase tracking-widest mb-12">
-      Software designer & builder
-    </p>
-    <Shader />
-    <div class="mt-12">
-      <div class="uppercase tracking-widest font-semibold mb-6">Now</div>
-      <div class="col-span-9 leading-relaxed mb-12">
-        Currently building <a href="http://cased.com">Cased</a> in Mill Valley, California.
-        When I'm not working, I'm riding gravel bikes, skiing, or trying to get in
-        to woodworking.
-      </div>
-      <div class="uppercase tracking-widest font-semibold mb-6">Recently</div>
-      <div class="flex flex-col gap-6 leading-relaxed mb-12">
-        Spent a few years in Colorado hiking and skiing. Before that, I spent a
-        decade in San Francisco working at start ups (I'm back!).
-      </div>
-      <div class="uppercase tracking-widest font-semibold mb-6">Work</div>
-      <div class="flex flex-col gap-6 leading-relaxed mb-12">
-        <p class="col-span-9 leading-relaxed">
-          At Cased, we build tools that help developers work with
-          infrastructure. We're backed by Founders Fund, Sancus, GTM Fund, and
-          angels from GitHub, Google, Meta, and more.
+  <div class="min-h-screen md:flex font-mono text-sm">
+    <!-- Content container - left side -->
+    <div class="md:w-1/2 p-12 overflow-y-auto">
+      <div class="max-w-[500px] mx-auto">
+        <h1 class="font-semibold tracking-widest uppercase">Ben Bleikamp</h1>
+        <p class="font-light uppercase tracking-widest mb-12">
+          Software designer & builder
         </p>
-        <p>
-          I've spent 15 years designing and building software at small start ups
-          and big companies. And I've had the opportunity to help small start
-          ups become big companies.
-        </p>
-        <p>Previously:</p>
-        <div class="space-y-4">
-          <div>
-            <div class="flex items-center">
-              <span class="whitespace-nowrap">Meta</span>
-              <span
-                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
-              ></span>
-              <span class="whitespace-nowrap">2017-2018</span>
-            </div>
-            <div class="text-slate-500">Design Manager</div>
+        <div>
+          <div class="uppercase tracking-widest font-semibold mb-6">Now</div>
+          <div class="col-span-9 leading-relaxed mb-12">
+            Currently building <a href="http://cased.com">Cased</a> in Mill Valley,
+            California. When I'm not working, I'm riding gravel bikes, skiing, or
+            trying to get in to woodworking.
           </div>
-
-          <div>
-            <div class="flex items-center">
-              <span class="whitespace-nowrap">GitHub</span>
-              <span
-                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
-              ></span>
-              <span class="whitespace-nowrap">2011-2017</span>
-            </div>
-            <div class="text-slate-500">Head of Design, &c.</div>
+          <div class="uppercase tracking-widest font-semibold mb-6">
+            Recently
           </div>
-
-          <div>
-            <div class="flex items-center">
-              <span class="whitespace-nowrap">Yelp</span>
-              <span
-                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
-              ></span>
-              <span class="whitespace-nowrap">2009-2011</span>
-            </div>
-            <div class="text-slate-500">Product Manager</div>
+          <div class="flex flex-col gap-6 leading-relaxed mb-12">
+            Spent a few years in Colorado hiking and skiing. Before that, I
+            spent a decade in San Francisco working at start ups (I'm back!).
           </div>
+          <div class="uppercase tracking-widest font-semibold mb-6">Work</div>
+          <div class="flex flex-col gap-6 leading-relaxed mb-12">
+            <p class="col-span-9 leading-relaxed">
+              At Cased, we build tools that help developers work with
+              infrastructure. We're backed by Founders Fund, Sancus, GTM Fund,
+              and angels from GitHub, Google, Meta, and more.
+            </p>
+            <p>
+              I've spent 15 years designing and building software at small start
+              ups and big companies. And I've had the opportunity to help small
+              start ups become big companies.
+            </p>
+            <p>Previously:</p>
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center">
+                  <span class="whitespace-nowrap">Meta</span>
+                  <span
+                    class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+                  ></span>
+                  <span class="whitespace-nowrap">2017-2018</span>
+                </div>
+                <div class="text-slate-500">Head of Design Infrastructure</div>
+              </div>
 
-          <div>
-            <div class="flex items-center">
-              <span class="whitespace-nowrap">Bleacher Report</span>
-              <span
-                class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
-              ></span>
-              <span class="whitespace-nowrap">2008-2009</span>
+              <div>
+                <div class="flex items-center">
+                  <span class="whitespace-nowrap">GitHub</span>
+                  <span
+                    class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+                  ></span>
+                  <span class="whitespace-nowrap">2011-2017</span>
+                </div>
+                <div class="text-slate-500">Head of Design, &c.</div>
+              </div>
+
+              <div>
+                <div class="flex items-center">
+                  <span class="whitespace-nowrap">Yelp</span>
+                  <span
+                    class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+                  ></span>
+                  <span class="whitespace-nowrap">2009-2011</span>
+                </div>
+                <div class="text-slate-500">Product Manager</div>
+              </div>
+
+              <div>
+                <div class="flex items-center">
+                  <span class="whitespace-nowrap">Bleacher Report</span>
+                  <span
+                    class="flex-grow mx-2 overflow-hidden whitespace-nowrap text-neutral-300 dots-separator"
+                  ></span>
+                  <span class="whitespace-nowrap">2008-2009</span>
+                </div>
+                <div class="text-slate-500">Designer</div>
+              </div>
             </div>
-            <div class="text-slate-500">Designer</div>
+          </div>
+          <div class="uppercase tracking-widest font-semibold mb-6">Say hi</div>
+          <div class="col-span-9 leading-relaxed mb-12">
+            Email me at ben@bleikamp.com
           </div>
         </div>
       </div>
-      <div class="uppercase tracking-widest font-semibold mb-6">Say hi</div>
-      <div class="col-span-9 leading-relaxed mb-12">
-        ben@bleikamp.com
-      </div>
+    </div>
+
+    <!-- Shader container - right side -->
+    <div class="md:w-1/2 hidden md:block shader-fixed-container">
+      <Shader />
     </div>
   </div>
 </Layout>

@@ -7,3 +7,26 @@ a {
     @apply text-indigo-500;
   }
 }
+
+.shader-fixed-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+}
+
+.shader-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.shader-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  background-color: #000;
+  cursor: none;
+}

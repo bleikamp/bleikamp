@@ -1,73 +1,91 @@
-<style>
-  .shader-canvas {
-    @apply w-full h-full;
-    background-color: #000;
-  }
-</style>
-
-<canvas id="webgl-canvas" class="shader-canvas cursor-none"></canvas>
+<div class="shader-container">
+  <canvas id="webgl-canvas" class="shader-canvas"></canvas>
+</div>
 
 <script>
-  const canvas = document.getElementById("webgl-canvas");
+  const canvas = document.getElementById("webgl-canvas") as HTMLCanvasElement;
   const gl = canvas.getContext("webgl");
 
-  let mouseXVel = 0;
-  let mouseYVel = 0;
-  let lastMouseX = 0.5;
-  let lastMouseY = 0.5;
-  let velocityDecay = 0.01; // How quickly velocity falls off
+  if (!gl) {
+    console.error("WebGL not supported");
+  } else {
+    // Type assertion to help TypeScript understand gl is not null in this block
+    const glContext = gl as WebGLRenderingContext;
+    let mouseXVel = 0;
+    let mouseYVel = 0;
+    let lastMouseX = 0.5;
+    let lastMouseY = 0.5;
+    let velocityDecay = 0.01; // How quickly velocity falls off
 
-  // Resize the canvas
-  function resizeCanvas() {
-    canvas.width = window.innerWidth * 0.3;
-    canvas.height = window.innerWidth * 0.3;
-    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-  }
+    // Resize the canvas
+    function resizeCanvas() {
+      const container = canvas.closest(".shader-container");
+      if (container) {
+        // Get the container dimensions
+        const containerRect = container.getBoundingClientRect();
 
-  window.addEventListener("resize", () => {
-    resizeCanvas();
-  });
+        // Set canvas dimensions to match container
+        canvas.width = containerRect.width;
+        canvas.height = containerRect.height;
+      } else {
+        // Fallback if container not found
+        canvas.width = window.innerWidth * 0.5;
+        canvas.height = window.innerHeight;
+      }
 
-  resizeCanvas(); // initial sizing
-
-  function createShader(gl, type, source) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.error("Shader compile failed:", gl.getShaderInfoLog(shader));
-      gl.deleteShader(shader);
-      return null;
-    }
-    return shader;
-  }
-
-  function createProgram(gl, vertexSource, fragmentSource) {
-    const vShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
-    const fShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-
-    const program = gl.createProgram();
-    gl.attachShader(program, vShader);
-    gl.attachShader(program, fShader);
-    gl.linkProgram(program);
-
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error("Program link failed:", gl.getProgramInfoLog(program));
-      gl.deleteProgram(program);
-      return null;
+      // Update WebGL viewport
+      glContext.viewport(0, 0, glContext.drawingBufferWidth, glContext.drawingBufferHeight);
     }
 
-    return program;
-  }
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+    });
 
-  const vertexSource = `
+    resizeCanvas(); // initial sizing
+
+    function createShader(gl: WebGLRenderingContext, type: number, source: string) {
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("Shader compile failed:", gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    }
+
+    function createProgram(gl: WebGLRenderingContext, vertexSource: string, fragmentSource: string) {
+      const vShader = createShader(gl, gl.VERTEX_SHADER, vertexSource);
+      const fShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
+      
+      if (!vShader || !fShader) return null;
+
+      const program = gl.createProgram();
+      if (!program) return null;
+      
+      gl.attachShader(program, vShader);
+      gl.attachShader(program, fShader);
+      gl.linkProgram(program);
+
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error("Program link failed:", gl.getProgramInfoLog(program));
+        gl.deleteProgram(program);
+        return null;
+      }
+
+      return program;
+    }
+
+    const vertexSource = `
     attribute vec2 a_position;
     void main() {
         gl_Position = vec4(a_position, 0.0, 1.0);
     }
 `;
 
-  const fragmentSource = `
+    const fragmentSource = `
     precision mediump float;
     uniform vec2 u_mouse;
     uniform vec2 u_resolution;
@@ -272,80 +290,90 @@
     }
 `;
 
-  const program = createProgram(gl, vertexSource, fragmentSource);
+    const program = createProgram(glContext, vertexSource, fragmentSource);
+    if (!program) {
+      console.error("Failed to create shader program");
+      return;
+    }
 
-  // Look up attributes/uniforms
-  const aPositionLocation = gl.getAttribLocation(program, "a_position");
-  const uResolutionLocation = gl.getUniformLocation(program, "u_resolution");
-  const uTimeLocation = gl.getUniformLocation(program, "u_time");
-  const uMouseLocation = gl.getUniformLocation(program, "u_mouse");
-  const uMouseVelocityLocation = gl.getUniformLocation(
-    program,
-    "u_mouseVelocity",
-  );
-
-  let mouseX = 0.5;
-  let mouseY = 0.5;
-
-  canvas.addEventListener("mousemove", (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const newMouseX = (e.clientX - rect.left) / rect.width;
-    const newMouseY = 1.0 - (e.clientY - rect.top) / rect.height;
-
-    // Calculate velocity
-    mouseXVel = (newMouseX - lastMouseX) * 2.0; // Multiply to amplify effect
-    mouseYVel = (newMouseY - lastMouseY) * 2.0;
-
-    // Update positions
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
-    mouseX = Math.max(0, Math.min(1, newMouseX));
-    mouseY = Math.max(0, Math.min(1, newMouseY));
-  });
-
-  canvas.addEventListener("mouseleave", () => {
-    mouseX = 0.5;
-    mouseY = 0.5;
-  });
-
-  // Create buffer with full-screen quad
-  const positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  const positions = new Float32Array([
-    -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
-  ]);
-  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-
-  // Prepare to draw
-  gl.useProgram(program);
-  gl.enableVertexAttribArray(aPositionLocation);
-  gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
-
-  // Rendering / Animation loop
-  let startTime = performance.now();
-  function render() {
-    const now = performance.now();
-    const time = (now - startTime) * 0.001;
-
-    mouseXVel *= velocityDecay;
-    mouseYVel *= velocityDecay;
-
-    gl.uniform2f(uMouseLocation, mouseX, mouseY);
-    gl.uniform2f(
-      uResolutionLocation,
-      gl.drawingBufferWidth,
-      gl.drawingBufferHeight,
+    // Look up attributes/uniforms
+    const aPositionLocation = glContext.getAttribLocation(program, "a_position");
+    const uResolutionLocation = glContext.getUniformLocation(program, "u_resolution");
+    const uTimeLocation = glContext.getUniformLocation(program, "u_time");
+    const uMouseLocation = glContext.getUniformLocation(program, "u_mouse");
+    const uMouseVelocityLocation = glContext.getUniformLocation(
+      program,
+      "u_mouseVelocity"
     );
-    gl.uniform1f(uTimeLocation, time);
-    gl.uniform2f(uMouseVelocityLocation, mouseXVel, mouseYVel);
 
-    gl.clearColor(0.4, 0.4, 0.4, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    let mouseX = 0.5;
+    let mouseY = 0.5;
 
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    canvas.addEventListener("mousemove", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const newMouseX = (e.clientX - rect.left) / rect.width;
+      const newMouseY = 1.0 - (e.clientY - rect.top) / rect.height;
 
-    requestAnimationFrame(render);
+      // Calculate velocity
+      mouseXVel = (newMouseX - lastMouseX) * 2.0; // Multiply to amplify effect
+      mouseYVel = (newMouseY - lastMouseY) * 2.0;
+
+      // Update positions
+      lastMouseX = mouseX;
+      lastMouseY = mouseY;
+      mouseX = Math.max(0, Math.min(1, newMouseX));
+      mouseY = Math.max(0, Math.min(1, newMouseY));
+    });
+
+    canvas.addEventListener("mouseleave", () => {
+      mouseX = 0.5;
+      mouseY = 0.5;
+    });
+
+    // Create buffer with full-screen quad
+    const positionBuffer = glContext.createBuffer();
+    if (!positionBuffer) {
+      console.error("Failed to create position buffer");
+      return;
+    }
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, positionBuffer);
+    const positions = new Float32Array([
+      -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
+    ]);
+    glContext.bufferData(glContext.ARRAY_BUFFER, positions, glContext.STATIC_DRAW);
+
+    // Prepare to draw
+    glContext.useProgram(program);
+    glContext.enableVertexAttribArray(aPositionLocation);
+    glContext.vertexAttribPointer(aPositionLocation, 2, glContext.FLOAT, false, 0, 0);
+
+    // Rendering / Animation loop
+    let startTime = performance.now();
+    function render() {
+      const now = performance.now();
+      const time = (now - startTime) * 0.001;
+
+      mouseXVel *= velocityDecay;
+      mouseYVel *= velocityDecay;
+
+      if (glContext) {
+        glContext.uniform2f(uMouseLocation, mouseX, mouseY);
+        glContext.uniform2f(
+          uResolutionLocation,
+          glContext.drawingBufferWidth,
+          glContext.drawingBufferHeight
+        );
+        glContext.uniform1f(uTimeLocation, time);
+        glContext.uniform2f(uMouseVelocityLocation, mouseXVel, mouseYVel);
+
+        glContext.clearColor(0, 0, 0, 0);
+        glContext.clear(glContext.COLOR_BUFFER_BIT);
+        glContext.drawArrays(glContext.TRIANGLES, 0, 6);
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    render();
   }
-
-  render();
 </script>
