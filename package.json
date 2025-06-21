@@ -7,10 +7,10 @@
     "tailwindcss": "^4.0.0"
   },
   "scripts": {
-    "dev": "bunx astro dev",
-    "build": "bunx astro build",
-    "preview": "bunx astro preview",
-    "astro": "bunx astro"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
   "type": "module"
 }
