@@ -37,8 +37,8 @@ function getDaughterAge() {
     const years = Math.floor(monthsDiff / 12);
     const remainingMonths = monthsDiff % 12;
     
-    if (remainingMonths >= 6) {
-      // Round up if 6+ months
+    if (remainingMonths >= 11) {
+      // Round up if 11+ months
       return `${years + 1} year old daughter`;
     } else {
       return `${years} year old daughter`;
