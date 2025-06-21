@@ -12,5 +12,8 @@
     "preview": "astro preview",
     "astro": "astro"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
