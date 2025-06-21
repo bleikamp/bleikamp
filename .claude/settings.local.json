@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "Bash(bun install:*)",
+      "Bash(bun run:*)",
+      "Bash(bun add:*)",
+      "Bash(cat:*)",
+      "Bash(bun remove:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

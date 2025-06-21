@@ -1,32 +1,79 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Shader from "../components/Shader.astro";
+import { getCollection } from 'astro:content';
+
+// Get all published blog posts
+const posts = (await getCollection('blog', ({ data }) => {
+  return data.draft !== true;
+})).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+  .slice(0, 10); // Get the 10 most recent posts
+
+// Calculate daughter's age
+function getDaughterAge() {
+  const birthDate = new Date('2025-02-26');
+  const today = new Date();
+  
+  // If she hasn't been born yet
+  if (today < birthDate) {
+    const monthsUntil = Math.ceil((birthDate.getMonth() - today.getMonth()) + 
+                                  (birthDate.getFullYear() - today.getFullYear()) * 12);
+    return `daughter arriving in ${monthsUntil} month${monthsUntil !== 1 ? 's' : ''}`;
+  }
+  
+  // Calculate age after birth
+  const monthsDiff = (today.getFullYear() - birthDate.getFullYear()) * 12 + 
+                     (today.getMonth() - birthDate.getMonth());
+  
+  if (monthsDiff < 1) {
+    // Less than a month old
+    const weeks = Math.floor((today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 7));
+    return `${weeks} week old daughter`;
+  } else if (monthsDiff < 12) {
+    // Less than a year old
+    return `${monthsDiff} month old daughter`;
+  } else {
+    // One year or older
+    const years = Math.floor(monthsDiff / 12);
+    const remainingMonths = monthsDiff % 12;
+    
+    if (remainingMonths >= 6) {
+      // Round up if 6+ months
+      return `${years + 1} year old daughter`;
+    } else {
+      return `${years} year old daughter`;
+    }
+  }
+}
+
+const daughterAge = getDaughterAge();
 ---
 
 <Layout>
-  <div class="min-h-screen md:flex font-mono text-sm">
+  <div class="min-h-screen md:flex text-sm text-stone-900">
     <!-- Content container - left side -->
     <div class="md:w-1/2 p-12 overflow-y-auto">
       <div class="max-w-[500px] mx-auto">
         <h1 class="font-semibold tracking-widest uppercase">Ben Bleikamp</h1>
-        <p class="font-light uppercase tracking-widest mb-12">
-          Software designer & builder
+        <p class="font-light uppercase tracking-widest mb-12 text-xs">
+          Software designer, sometimes programmer
         </p>
         <div>
-          <div class="uppercase tracking-widest font-semibold mb-6">Now</div>
+          <div class="font-semibold mb-6">Now</div>
           <div class="col-span-9 leading-relaxed mb-12">
-            Currently building <a href="http://cased.com">Cased</a> in Mill Valley,
-            California. When I'm not working, I'm riding gravel bikes, skiing, or
-            trying to get in to woodworking.
+            Right now I'm building <a href="http://cased.com">Cased</a> and based in Mill Valley,
+            California. When I'm not working, I'm <del class="text-stone-500">riding gravel bikes</del>, <del class="text-stone-500">skiing</del>, or
+            <del class="text-stone-500">trying to get in to woodworking</del> trying to keep up with my {daughterAge}.
           </div>
-          <div class="uppercase tracking-widest font-semibold mb-6">
+          <div class="font-semibold mb-6">
             Recently
           </div>
           <div class="flex flex-col gap-6 leading-relaxed mb-12">
             Spent a few years in Colorado hiking and skiing. Before that, I
-            spent a decade in San Francisco working at start ups (I'm back!).
+            spent a decade in San Francisco working at start ups—happy to be back.
           </div>
-          <div class="uppercase tracking-widest font-semibold mb-6">Work</div>
+          
+          <div class="font-semibold mb-6">Work</div>
           <div class="flex flex-col gap-6 leading-relaxed mb-12">
             <p class="col-span-9 leading-relaxed">
               At Cased, we build tools that help developers work with
@@ -48,7 +95,7 @@ import Shader from "../components/Shader.astro";
                   ></span>
                   <span class="whitespace-nowrap">2017-2018</span>
                 </div>
-                <div class="text-slate-500">Head of Design Infrastructure</div>
+                <div class="text-stone-500 text-xs">Design tools & infrastructure</div>
               </div>
 
               <div>
@@ -59,7 +106,7 @@ import Shader from "../components/Shader.astro";
                   ></span>
                   <span class="whitespace-nowrap">2011-2017</span>
                 </div>
-                <div class="text-slate-500">Head of Design, &c.</div>
+                <div class="text-stone-500 text-xs">Head of Design, Director of Product, &c.</div>
               </div>
 
               <div>
@@ -70,7 +117,7 @@ import Shader from "../components/Shader.astro";
                   ></span>
                   <span class="whitespace-nowrap">2009-2011</span>
                 </div>
-                <div class="text-slate-500">Product Manager</div>
+                <div class="text-stone-500 text-xs">Product Manager</div>
               </div>
 
               <div>
@@ -81,7 +128,7 @@ import Shader from "../components/Shader.astro";
                   ></span>
                   <span class="whitespace-nowrap">2008-2009</span>
                 </div>
-                <div class="text-slate-500">Designer</div>
+                <div class="text-stone-500 text-xs">Designer</div>
               </div>
             </div>
           </div>

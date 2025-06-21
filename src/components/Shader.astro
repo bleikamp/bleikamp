@@ -3,12 +3,22 @@
 </div>
 
 <script>
-  const canvas = document.getElementById("webgl-canvas") as HTMLCanvasElement;
-  const gl = canvas.getContext("webgl");
+  function initShader() {
+    const canvas = document.getElementById("webgl-canvas") as HTMLCanvasElement;
+    const gl = canvas.getContext("webgl", { 
+      alpha: true,
+      premultipliedAlpha: false 
+    }) || canvas.getContext("experimental-webgl", {
+      alpha: true,
+      premultipliedAlpha: false 
+    });
 
-  if (!gl) {
-    console.error("WebGL not supported");
-  } else {
+    if (!gl) {
+      console.error("WebGL not supported on this browser");
+      return;
+    }
+    
+    console.log("WebGL context created successfully");
     // Type assertion to help TypeScript understand gl is not null in this block
     const glContext = gl as WebGLRenderingContext;
     let mouseXVel = 0;
@@ -86,7 +96,7 @@
 `;
 
     const fragmentSource = `
-    precision mediump float;
+    precision highp float;
     uniform vec2 u_mouse;
     uniform vec2 u_resolution;
     uniform float u_time;
@@ -117,7 +127,7 @@
         return outputMin + (outputMax - outputMin) * (value - inputMin) / (inputMax - inputMin);
     }
 
-    vec2 glassBars(vec2 st) {
+    vec2 glassBars(vec2 st, vec2 mousePos) {
         float pixelWidth = (u_resolution.x / 8.0);
         float gapPixels = 1.5;
         float barSpacing = (pixelWidth + gapPixels) / u_resolution.x;
@@ -134,10 +144,14 @@
         float barGradient = smoothstep(0.0, 1.0, barLocalX);
 
         bar *= barGradient;
-        bar *= 0.15;
+        
+        // Make glass effect follow mouse horizontally
+        float distFromMouseX = abs(st.x - mousePos.x);
+        float glassInfluence = 1.0 - smoothstep(0.0, 0.5, distFromMouseX);
+        bar *= 0.15 * glassInfluence;
 
         float distFromCenter = length(st);
-        float distortionAmount = smoothstep(0.0, 0.75, distFromCenter) * 0.7;
+        float distortionAmount = smoothstep(0.0, 0.75, distFromCenter) * 0.7 * glassInfluence;
 
         return vec2(bar, distortionAmount);
     }
@@ -206,7 +220,7 @@
         bool inSquareBounds = abs(originalSt.x) < squareSize &&
                              abs(originalSt.y) < squareSize;
 
-        vec2 glassEffect = glassBars(originalSt);
+        vec2 glassEffect = glassBars(originalSt, mousePos);
         float barPattern = glassEffect.x;
         float distortionAmount = glassEffect.y;
 
@@ -342,6 +356,10 @@
     ]);
     glContext.bufferData(glContext.ARRAY_BUFFER, positions, glContext.STATIC_DRAW);
 
+    // Enable blending for transparency
+    glContext.enable(glContext.BLEND);
+    glContext.blendFunc(glContext.SRC_ALPHA, glContext.ONE_MINUS_SRC_ALPHA);
+    
     // Prepare to draw
     glContext.useProgram(program);
     glContext.enableVertexAttribArray(aPositionLocation);
@@ -353,8 +371,9 @@
       const now = performance.now();
       const time = (now - startTime) * 0.001;
 
-      mouseXVel *= velocityDecay;
-      mouseYVel *= velocityDecay;
+      // Apply velocity decay
+      mouseXVel *= (1.0 - velocityDecay);
+      mouseYVel *= (1.0 - velocityDecay);
 
       if (glContext) {
         glContext.uniform2f(uMouseLocation, mouseX, mouseY);
@@ -375,5 +394,12 @@
     }
 
     render();
+  }
+  
+  // Initialize the shader when the page loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initShader);
+  } else {
+    initShader();
   }
 </script>
